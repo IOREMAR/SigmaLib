@@ -1,0 +1,97 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+    useLibrary 'org.apache.http.legacy'
+
+
+    defaultConfig {
+        3
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        se
+
+        debug {
+            debuggable true
+        }
+
+        qa {
+            minifyEnabled false
+            debuggable true
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets { main { assets.srcDirs = ['src/main/assets', 'src/main/assets/'] } }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.itextpdf:itextpdf:5.5.13'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    implementation 'org.apache.commons:commons-lang3:3.4'
+    implementation 'org.jooq:jooq:3.6.4'
+    implementation 'javax.annotation:javax.annotation-api:1.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation files('libs/ApiAndroid-1.5.jar')
+    implementation files('libs/core-3.1.0.jar')
+}
+
+
+task generateBDconJooq {
+    def writer = new StringWriter()
+
+    doLast {
+        org.jooq.util.GenerationTool.generate(
+                javax.xml.bind.JAXB.unmarshal(new StringReader(writer.toString()), org.jooq.util.jaxb.Configuration.class)
+        )
+    }
+
+    doFirst {
+        def xml = new groovy.xml.MarkupBuilder(writer)
+                .configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.6.0.xsd') {
+            jdbc() {
+                driver('org.sqlite.JDBC')
+                url("jdbc:sqlite:$projectDir/src/main/assets/databases/transacciones.db")
+                user('sa')
+                password('')
+            }
+
+            generator() {
+                database() {
+                    forcedTypes() {
+                        forcedType() {
+                            delegate.invokeMethod('name', ['BIGINT'])
+                            expression('Transacciones.fecha')
+                            types('.*')
+                        }
+                    }
+                }
+
+                generate([:]) {
+                    pojos true
+                    daos true
+                }
+
+                target() {
+                    packageName('sigma.dbgen')
+                    directory("$projectDir/src/main/java")
+                }
+            }
+        }
+    }
+}
