@@ -15,6 +15,7 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.TextAppearanceSpan;
+
 import com.google.zxing.BarcodeFormat;
 
 import com.google.zxing.EncodeHintType;
@@ -26,8 +27,8 @@ import com.pagatodo.sigmamanager.Instance.ApiInstance;
 import com.pagatodo.sigmamanager.R;
 
 
-
 import net.fullcarga.android.api.data.respuesta.CamposTicket;
+
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,21 +68,21 @@ public final class TicketGenerator {
     private static final String MEDIUM_SIZE_CODE = "02";
     private static final String BIG_SIZE_CODE = "03";
 
-//    public static final int TEXT_SMALL_SIZE = MposApplication.getInstance().getConfigManager().getTextSizeSmall();
+    //    public static final int TEXT_SMALL_SIZE = MposApplication.getInstance().getConfigManager().getTextSizeSmall();
 //    public static final int TEXT_NORMAL_SIZE = MposApplication.getInstance().getConfigManager().getTextSizeNormal();
 //    public static final int TEXT_MEDIUM_SIZE = MposApplication.getInstance().getConfigManager().getTextSizeMedium();
 //    public static final int TEXT_LARGE_SIZE = MposApplication.getInstance().getConfigManager().getTextSizeLarge();
     public static final int TEXT_SMALL_SIZE = 12;
     public static final int TEXT_NORMAL_SIZE = 14;
     public static final int TEXT_MEDIUM_SIZE = 16;
-    public static final int TEXT_LARGE_SIZE  =18 ;
+    public static final int TEXT_LARGE_SIZE = 18;
 
     private static final String SIZE_INDICATOR_CODE = "46";
 
     private static Bitmap bitmapBarcode;
     private static String boleta;
 
-    private static CamposEMVData camposEMVData ;
+    private static CamposEMVData camposEMVData;
 
     public TicketGenerator() {
     }
@@ -173,69 +174,69 @@ public final class TicketGenerator {
             if (bufferHex.length() != 2) {
                 continue;
             }
-                if (validateEsc(bufferHex)) {
-                    final char[] auxEsc = Arrays.copyOfRange(array, indexStrHex, indexStrHex + 2);
-                    auxHexBuilder.delete(0, auxHexBuilder.length());
-                    for (final char charHex : auxEsc) {
-                        auxHexBuilder.append(charHex);
-                        if (auxHexBuilder.length() == 2) {
+            if (validateEsc(bufferHex)) {
+                final char[] auxEsc = Arrays.copyOfRange(array, indexStrHex, indexStrHex + 2);
+                auxHexBuilder.delete(0, auxHexBuilder.length());
+                for (final char charHex : auxEsc) {
+                    auxHexBuilder.append(charHex);
+                    if (auxHexBuilder.length() == 2) {
 
-                            if (auxHexBuilder.toString().equalsIgnoreCase(SIZE_INDICATOR_CODE)) {
+                        if (auxHexBuilder.toString().equalsIgnoreCase(SIZE_INDICATOR_CODE)) {
 
-                                getSizeAccordingCode(ticketHex.substring(indexStrHex + 2, indexStrHex + 4));
-                            }
+                            getSizeAccordingCode(ticketHex.substring(indexStrHex + 2, indexStrHex + 4));
+                        }
 
-                            if (validateU(auxHexBuilder)) {
-                                try {
-                                    strAscii = getFormatValueU(Arrays.copyOfRange(array, indexStrHex + 2, indexStrHex + 4), camposTicket);
-                                } catch (final Exception e) {
-                                    LOGGER.throwing(TAG, 1, e, e.getMessage());
-                                }
-                                indexStrHex += 4;// se aumentan 2 caracteres de 55 mas 2 caracteres que se leyeron
-                            } else if (validateV(auxHexBuilder)) {
-                                try {
-                                    strAscii = getFormatValueV(Arrays.copyOfRange(array, indexStrHex + 2, indexStrHex + 8), sigmaBdManager);
-                                } catch (final Exception e) {
-                                   LOGGER.throwing(TAG, 1, e, e.getMessage());
-                                }
-                                indexStrHex += 8; //  se aumentan 2 caracteres de "56"  de la V yAxis los 6 carateres que se leyeron 2 de la tabla yAxis 4 del registro
-                            } else if (validateW(auxHexBuilder)) {
-                                try {
-                                    strAscii = getFormatValueW(Arrays.copyOfRange(array, indexStrHex + 2, indexStrHex + 6), camposTicket);
-                                } catch (final Exception e) {
-                                    LOGGER.throwing(TAG, 1, e, e.getMessage());
-                                }
-                                indexStrHex += 6;//aumentamos en 2 por el "57" de la W aumentamos en 2 por el campos yAxis 2 por el sub campo
-                            } else if (validateE(auxHexBuilder)) {
-                                try {
-                                    strAscii = getFormatValueE(Arrays.copyOfRange(array, indexStrHex + 2, indexStrHex + 4));
-                                } catch (final Exception e) {
-                                    LOGGER.throwing(TAG, 1, e, e.getMessage());
-                                }
-                                indexStrHex += 4;
-                            } else if(validateC(auxHexBuilder)){
-                                try {
-                                    bitmapBarcode = getFormatValueC(Arrays.copyOfRange(array, indexStrHex + 2, indexStrHex + 8), camposTicket);
-                                    if (bitmapBarcode != null) {
-                                        strAscii= Constantes.BCODE_FIELD;
-                                    }
-                                } catch (final Exception e) {
-                                    LOGGER.throwing(TAG, 1, e, e.getMessage());
+                        if (validateU(auxHexBuilder)) {
+                            try {
+                                strAscii = getFormatValueU(Arrays.copyOfRange(array, indexStrHex + 2, indexStrHex + 4), camposTicket);
+                            } catch (final Exception e) {
+                                LOGGER.throwing(TAG, 1, e, e.getMessage());
                             }
-                            } else {
-                                strAscii = fromHexString(bufferHex.toString());
+                            indexStrHex += 4;// se aumentan 2 caracteres de 55 mas 2 caracteres que se leyeron
+                        } else if (validateV(auxHexBuilder)) {
+                            try {
+                                strAscii = getFormatValueV(Arrays.copyOfRange(array, indexStrHex + 2, indexStrHex + 8), sigmaBdManager);
+                            } catch (final Exception e) {
+                                LOGGER.throwing(TAG, 1, e, e.getMessage());
                             }
+                            indexStrHex += 8; //  se aumentan 2 caracteres de "56"  de la V yAxis los 6 carateres que se leyeron 2 de la tabla yAxis 4 del registro
+                        } else if (validateW(auxHexBuilder)) {
+                            try {
+                                strAscii = getFormatValueW(Arrays.copyOfRange(array, indexStrHex + 2, indexStrHex + 6), camposTicket);
+                            } catch (final Exception e) {
+                                LOGGER.throwing(TAG, 1, e, e.getMessage());
+                            }
+                            indexStrHex += 6;//aumentamos en 2 por el "57" de la W aumentamos en 2 por el campos yAxis 2 por el sub campo
+                        } else if (validateE(auxHexBuilder)) {
+                            try {
+                                strAscii = getFormatValueE(Arrays.copyOfRange(array, indexStrHex + 2, indexStrHex + 4));
+                            } catch (final Exception e) {
+                                LOGGER.throwing(TAG, 1, e, e.getMessage());
+                            }
+                            indexStrHex += 4;
+                        } else if (validateC(auxHexBuilder)) {
+                            try {
+                                bitmapBarcode = getFormatValueC(Arrays.copyOfRange(array, indexStrHex + 2, indexStrHex + 8), camposTicket);
+                                if (bitmapBarcode != null) {
+                                    strAscii = Constantes.BCODE_FIELD;
+                                }
+                            } catch (final Exception e) {
+                                LOGGER.throwing(TAG, 1, e, e.getMessage());
+                            }
+                        } else {
+                            strAscii = fromHexString(bufferHex.toString());
                         }
                     }
-                    bufferHex.delete(0, bufferHex.length()); //limpiamos ESC
-                } else {
-                    if (bufferHex.toString().equalsIgnoreCase("0A")) {
-                        sizesAccordingLineIndex.add(charsPerLine);
-                    }
-                    strAscii = fromHexString(bufferHex.toString());
-                    bufferHex.delete(0, bufferHex.length());// limpiamos buffer
                 }
-                bufferAscii.append(strAscii); // cambio de hex a ascii
+                bufferHex.delete(0, bufferHex.length()); //limpiamos ESC
+            } else {
+                if (bufferHex.toString().equalsIgnoreCase("0A")) {
+                    sizesAccordingLineIndex.add(charsPerLine);
+                }
+                strAscii = fromHexString(bufferHex.toString());
+                bufferHex.delete(0, bufferHex.length());// limpiamos buffer
+            }
+            bufferAscii.append(strAscii); // cambio de hex a ascii
 
         }
         return bufferAscii.toString();
@@ -393,18 +394,18 @@ public final class TicketGenerator {
         return stringAscii.toString();
     }
 
-    private static Bitmap getFormatValueC(final char[] array,  final CamposTicket camposTicket) {
+    private static Bitmap getFormatValueC(final char[] array, final CamposTicket camposTicket) {
         final StringBuilder stringHex = new StringBuilder();
         final StringBuilder stringAscii = new StringBuilder();
-        int type = - 1;
+        int type = -1;
         int field = -1;
         int subFlied = -1;
         for (final char character : array) {
             stringHex.append(character);
             if (stringHex.length() == 2) {
-                type = Integer.parseInt(stringHex.toString().substring(0,2), 16);
+                type = Integer.parseInt(stringHex.toString().substring(0, 2), 16);
             }
-            if (stringHex.length() == 4){
+            if (stringHex.length() == 4) {
                 field = Integer.parseInt(stringHex.toString().substring(2, 4), 16);
             }
             if (stringHex.length() == 6) {
@@ -651,6 +652,11 @@ public final class TicketGenerator {
         return boleta;
     }
 
+    public static void clearBoleta() {
+        boleta = null;
+        bitmapBarcode = null;
+    }
+
     private static SpannableStringBuilder setLineFeedToWholeTicket(final SpannableStringBuilder spannableBuffer) {
 
         final String[] lines = spannableBuffer.toString().trim().split("\n");
@@ -666,7 +672,7 @@ public final class TicketGenerator {
         }
 
         if (bitmapBarcode != null) {
-            final Drawable drawable = new BitmapDrawable( bitmapBarcode);
+            final Drawable drawable = new BitmapDrawable(bitmapBarcode);
             drawable.setBounds(0, 10, (int) (drawable.getIntrinsicWidth() / 1.75), drawable.getIntrinsicHeight());
             final ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM);
             final int start = spannableBuffer.toString().indexOf(Constantes.BCODE_FIELD);
@@ -708,7 +714,7 @@ public final class TicketGenerator {
             return null;
         }
 
-        try{
+        try {
             Map<EncodeHintType, Object> hints = null;
             hints = new EnumMap<>(EncodeHintType.class);
             hints.put(EncodeHintType.MARGIN, 0);
@@ -719,11 +725,11 @@ public final class TicketGenerator {
             final Bitmap bitmap = Bitmap.createBitmap(bitMatrix.getWidth(), bitMatrix.getHeight(), Bitmap.Config.ARGB_8888);
             for (int i = 0; i < bitMatrix.getWidth(); i++) {
                 for (int j = 0; j < bitMatrix.getHeight(); j++) {
-                    bitmap.setPixel(i, j, bitMatrix.get(i, j) ? Color.BLACK: Color.WHITE);
+                    bitmap.setPixel(i, j, bitMatrix.get(i, j) ? Color.BLACK : Color.WHITE);
                 }
             }
             return bitmap;
-        }catch (WriterException e){
+        } catch (WriterException e) {
             Logger.getLogger(e.getMessage());
             return null;
         }
