@@ -17,7 +17,6 @@ import android.text.style.ImageSpan;
 import android.text.style.TextAppearanceSpan;
 
 import com.google.zxing.BarcodeFormat;
-
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -25,7 +24,6 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.pagatodo.sigmamanager.Instance.ApiInstance;
 import com.pagatodo.sigmamanager.R;
-
 
 import net.fullcarga.android.api.data.respuesta.CamposTicket;
 
@@ -40,8 +38,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import sigma.general.interfaces.OnFailureListener;
-
-//import sigma.manager.CamposEMVData;
 import sigma.manager.SigmaBdManager;
 import sigma.utils.Constantes;
 import sigma.utils.CustomTypefaceSpan;
@@ -49,6 +45,7 @@ import sigma.utils.DateUtils;
 
 import static sigma.manager.AppLogger.LOGGER;
 
+//import sigma.manager.CamposEMVData;
 
 /**
  * Created by Daniel Ruiz on 26/09/2017.
@@ -86,7 +83,6 @@ public final class TicketGenerator {
 
     public TicketGenerator() {
     }
-
 
     public void setCamposEMVData(final CamposEMVData camposEMVData) {
         this.camposEMVData = camposEMVData;
@@ -149,7 +145,6 @@ public final class TicketGenerator {
         }
 
         return setLineFeedToWholeTicket(buf);
-
     }
 
     /***
@@ -237,7 +232,6 @@ public final class TicketGenerator {
                 bufferHex.delete(0, bufferHex.length());// limpiamos buffer
             }
             bufferAscii.append(strAscii); // cambio de hex a ascii
-
         }
         return bufferAscii.toString();
     }
@@ -605,7 +599,6 @@ public final class TicketGenerator {
         final String regexScript = "\\eA(.+)";
         final Pattern pattern = Pattern.compile(regexScript);
         final Matcher matcher = pattern.matcher(ticket);
-
 
         final AlignmentSpan.Standard alignmetNormal = new AlignmentSpan.Standard(Layout.Alignment.ALIGN_NORMAL);
         final AlignmentSpan.Standard alignmetCenter = new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
