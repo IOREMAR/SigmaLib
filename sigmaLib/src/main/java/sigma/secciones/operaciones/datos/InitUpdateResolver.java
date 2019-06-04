@@ -1,5 +1,8 @@
 package sigma.secciones.operaciones.datos;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.pagatodo.sigmamanager.Instance.ApiInstance;
 
 import net.fullcarga.android.api.ApiFullcargaAndroid;
@@ -13,7 +16,10 @@ import java.io.IOException;
 import java.util.Date;
 
 import sigma.manager.AppLogger;
+import sigma.utils.Constantes;
 import sigma.utils.UnzipUtility;
+
+import static sigma.utils.Constantes.PREFERENCE_SETTINGS;
 
 public class InitUpdateResolver  {
     private static final String TAG = InitUpdateResolver.class.getSimpleName();
@@ -51,7 +57,7 @@ public class InitUpdateResolver  {
     };
 
 
-    public static RespuestaUpdate Resolver (final DatosOperacion datosOperacion){
+    public static RespuestaUpdate Resolver (final DatosOperacion datosOperacion)throws RespuestaException {
 
         try {
             operacion = datosOperacion;
@@ -61,26 +67,34 @@ public class InitUpdateResolver  {
             if ( resolver != null && resolver.isCorrecta() ) {
 
                 try {
+
                     UnzipUtility.unzipFile(ApiInstance.getInstance().getSigmaPath() + ApiInstance.getInstance().getSigmaDBName() + ".zip", ApiInstance.getInstance().getSigmaPath());
+                    SharedPreferences preferencesdbname = ApiInstance.getInstance().getAppcontext().getSharedPreferences(PREFERENCE_SETTINGS, Context.MODE_PRIVATE);
+                    preferencesdbname.edit().putString(Constantes.Preferencia.DB_NAME.name(), ApiInstance.getInstance().getSigmaDBName() + ".db").apply();
                     return resolver;
-                } catch ( IOException | RuntimeException exc ) {
+                } catch (  RuntimeException exc ) {
                     AppLogger.LOGGER.throwing(TAG, 1, exc, "Error al Descomprimir");
-                    return null;
+                    throw  exc;
                 }
 
             } else {
-                return null;
+                throw new RespuestaException("Respuesta Incorrecta");
             }
 
-        }catch (Throwable exe ){
-            AppLogger.LOGGER.throwing(TAG,1,exe,exe.getCause().toString());
-            return null;
+        } catch ( IOException ioexe ){
+            AppLogger.LOGGER.throwing(TAG,1,ioexe,ioexe.getCause().toString());
         }
 
+        catch (RespuestaException  exe ){
+            AppLogger.LOGGER.throwing(TAG,1,exe,exe.getCause().toString());
+            throw  exe;
+        }
+
+        throw  new RespuestaException("Error en la Operación");
 
     }
 
-    private static RespuestaUpdate getRespuestaUpdate(DatosOperacion datosOperacion) {
+    private static RespuestaUpdate getRespuestaUpdate(DatosOperacion datosOperacion) throws RespuestaException {
         try {
             return ApiFullcargaAndroid.initUpdate(
                     AppLogger.LOGGER,
@@ -93,7 +107,7 @@ public class InitUpdateResolver  {
         }
         catch ( RespuestaException  exe ){
             AppLogger.LOGGER.throwing(TAG,1,exe,exe.getCause().toString());
-            return null;
+            throw  exe;
         }
     }
 

@@ -33,7 +33,7 @@ public class IconResolver  {
     private static  Map<String,Long> iconosCRC = Collections.EMPTY_MAP;
 
 
-    public static RespuestaListArchivos Resolver (final DatosOperacion datosOperacion ){
+    public static RespuestaListArchivos Resolver (final DatosOperacion datosOperacion ) throws  Exception{
     operacion = datosOperacion;
 
         try (final BdSigmaManager bdSigmaManager = StorageUtility.crearConexionSigmaManager()) {
@@ -45,6 +45,7 @@ public class IconResolver  {
             }
         }catch ( SQLException | IOException exe) {
             AppLogger.LOGGER.throwing(TAG,1,exe,exe.getCause().toString());
+            throw exe;
         }
 
         final RespuestaListArchivos resolver = iconList();
@@ -55,19 +56,19 @@ public class IconResolver  {
             final String oldDb = preferencesdbname.getString(Constantes.Preferencia.ICONZIP_NAME.name(),".zip");
             StorageUtility.deleteIfExistFile(ApiInstance.getInstance().getSigmaPath() + oldDb);
 
-            preferencesdbname.edit().putString(Constantes.Preferencia.ICONZIP_NAME.name(), resolver.getFileName() ).apply();
+
             ApiInstance.getInstance().setIconosName(resolver.getFileName());
             ApiInstance.getInstance().setFileSize(resolver.getFileSize());
             return resolver;
         }else {
-            return null;
+            throw  new Exception("Error en la Operacion");
         }
 
     }
 
 
 
-    private static RespuestaListArchivos iconList (){
+    private static RespuestaListArchivos iconList () throws RespuestaException{
         try {
 
 
@@ -80,10 +81,9 @@ public class IconResolver  {
         );
 
         }
-        catch ( RespuestaException  | NullPointerException exe ){
+        catch ( RespuestaException  | NullPointerException exe ) {
             AppLogger.LOGGER.throwing(TAG,1,exe,exe.getCause().toString());
-            operacion.getListener().onResponse(exe);
-            return null;
+            throw exe;
         }
     }
 

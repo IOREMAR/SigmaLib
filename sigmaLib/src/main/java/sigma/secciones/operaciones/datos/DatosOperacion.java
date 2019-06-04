@@ -199,8 +199,6 @@ public class DatosOperacion {
                         }else {
                             ApiInstance.getInstance().setOperacion(null);
                         }
-                    } else {
-                        throw new Throwable("Ocurrió un Error, Intente de Nuevo");
                     }
                     listener.onResponse(respuesta);
                 } catch ( Throwable  thrExe ){

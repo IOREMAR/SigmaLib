@@ -20,7 +20,7 @@ import static sigma.utils.Constantes.PREFERENCE_SETTINGS;
 
 public class InitResolver {
 
-    public static RespuestaListArchivos Resolver(final DatosOperacion datosOperacion) {
+    public static RespuestaListArchivos Resolver(final DatosOperacion datosOperacion) throws RespuestaException {
 
       final RespuestaListArchivos  respuestaArchivos = getRespuestaArchivos(datosOperacion);
 
@@ -31,18 +31,18 @@ public class InitResolver {
           final String oldDb = preferencesdbname.getString(Preferencia.DB_NAME.name(), ".db");
           StorageUtility.deleteIfExistFile(ApiInstance.getInstance().getSigmaPath() + oldDb);
 
-          preferencesdbname.edit().putString(Preferencia.DB_NAME.name(), respuestaArchivos.getFileName() + ".db").apply();
+
           ApiInstance.getInstance().setSigmaDBName(respuestaArchivos.getFileName());
           return respuestaArchivos;
 
       }else {
-          return null;
+         throw  new RespuestaException("Erro en al Operación");
       }
 
     }
 
 
-    private static RespuestaListArchivos getRespuestaArchivos(final DatosOperacion  datosOperacion){
+    private static RespuestaListArchivos getRespuestaArchivos(final DatosOperacion  datosOperacion) throws RespuestaException{
         try {
             return ApiFullcargaAndroid.initList(
                     AppLogger.LOGGER,
@@ -52,8 +52,7 @@ public class InitResolver {
             );
         }catch (RespuestaException exe){
             AppLogger.LOGGER.throwing(InitResolver.class.getSimpleName(),1,exe,exe.getCause().toString());
-            datosOperacion.getListener().onResponse(exe);
-            return  null;
+           throw  exe;
         }
 
     }

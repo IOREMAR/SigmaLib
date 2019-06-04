@@ -1,5 +1,8 @@
 package sigma.secciones.operaciones.datos;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.pagatodo.sigmamanager.Instance.ApiInstance;
 
 import net.fullcarga.android.api.ApiFullcargaAndroid;
@@ -14,7 +17,10 @@ import java.io.IOException;
 import java.util.Date;
 
 import sigma.manager.AppLogger;
+import sigma.utils.Constantes;
 import sigma.utils.UnzipUtility;
+
+import static sigma.utils.Constantes.PREFERENCE_SETTINGS;
 
 public class IconUpdateResolver {
 
@@ -56,17 +62,19 @@ public class IconUpdateResolver {
     };
 
 
-    public static RespuestaUpdate Resolver (final DatosOperacion datosOperacion) throws Throwable{
+    public static RespuestaUpdate Resolver (final DatosOperacion datosOperacion) throws Exception{
              operacion = datosOperacion;
              fileSize = ApiInstance.getInstance().getFileSize();
              fileOutputStream = new FileOutputStream(ApiInstance.getInstance().getSigmaPath() + ApiInstance.getInstance().getIconosName() + ".zip");
 
              final RespuestaUpdate resolver = getRespuestaUpdate(datosOperacion);
              UnzipUtility.unzipFile(ApiInstance.getInstance().getSigmaPath() + ApiInstance.getInstance().getIconosName() + ".zip", ApiInstance.getInstance().getSigmaPath());
+        SharedPreferences preferencesdbname = ApiInstance.getInstance().getAppcontext().getSharedPreferences(PREFERENCE_SETTINGS, Context.MODE_PRIVATE);
+        preferencesdbname.edit().putString(Constantes.Preferencia.ICONZIP_NAME.name(), ApiInstance.getInstance().getIconosName() ).apply();
              return resolver;
     }
 
-    private static RespuestaUpdate getRespuestaUpdate(DatosOperacion datosOperacion) throws Throwable {
+    private static RespuestaUpdate getRespuestaUpdate(DatosOperacion datosOperacion) throws RespuestaException {
         return ApiFullcargaAndroid.iconUpdate(
                 AppLogger.LOGGER,
                 datosOperacion.getIdPeticion(),

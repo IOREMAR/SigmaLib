@@ -16,8 +16,6 @@ import net.fullcarga.android.api.util.HexUtil;
 
 import java.sql.SQLException;
 
-import sigma.utils.UtilitiesSigma;
-
 import static sigma.utils.Constantes.PREFERENCE_SETTINGS;
 
 
@@ -35,7 +33,7 @@ public final class SesionBuilder {
             return SessionFactory.crearSesionLocal(
                     bdSigmaManager.crearDatosConexionLocalTrx(),
                     bdSigmaManager.crearDatosConexionLocalDonwload(),
-                    bdSigmaManager.crearDatosTPV(UtilitiesSigma.getNumeroSerie(), "1", ApiInstance.getVersionBdApp(), new StanProviderMock()),
+                    bdSigmaManager.crearDatosTPV(ApiInstance.getInstance().getNumSerie(), "1", ApiInstance.getVersionBdApp(), new StanProviderMock()),
                     claveTpv,
                     HexUtil.hex2byte(ApiInstance.getInstance().getGetclaveHexLocal(), Constantes.DEF_CHARSET),
                     ApiInstance.getInstance().getNameRsa());
@@ -43,7 +41,7 @@ public final class SesionBuilder {
             return SessionFactory.crearSesionLocal(
                     new DatosConexion(ApiInstance.getInstance().getIpServer(), ApiInstance.getInstance().getPuerto(), 5000,60000),
                     new DatosConexion(ApiInstance.getInstance().getIpServer(),ApiInstance.getInstance().getPuerto(), 5000, 60000),
-                    new DatosTPV("99999999", UtilitiesSigma.getDecimalesPais(), new StanProviderMock(), UtilitiesSigma.getNumeroSerie(), ApiInstance.getInstance().getPaisCode(), "", "", ApiInstance.getVersionBdApp()),
+                    new DatosTPV("99999999", ApiInstance.getInstance().getDecimales(), new StanProviderMock(), ApiInstance.getInstance().getNumSerie(), ApiInstance.getInstance().getPaisCode(), "", "", ApiInstance.getVersionBdApp()),
                     claveTpv,
                     HexUtil.hex2byte(ApiInstance.getInstance().getGetclaveHexLocal(), Constantes.DEF_CHARSET),
                     ApiInstance.getInstance().getNameRsa()

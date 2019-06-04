@@ -235,7 +235,7 @@ public class Transacciones   {
     private TransactionAction initList (final DatosOperacion datosOperacion){
         return new TransactionAction() {
             @Override
-            public RespuestaListArchivos execute() {
+            public RespuestaListArchivos execute()throws Exception {
                 return InitResolver.Resolver(datosOperacion);
             }
         };
@@ -244,7 +244,7 @@ public class Transacciones   {
     private TransactionAction initUpdate (final DatosOperacion datosOperacion){
         return new TransactionAction() {
             @Override
-            public RespuestaUpdate execute() {
+            public RespuestaUpdate execute()throws Exception {
                 return InitUpdateResolver.Resolver(datosOperacion);
             }
         };
@@ -253,7 +253,7 @@ public class Transacciones   {
     private TransactionAction iconosList (final DatosOperacion datosOperacion){
         return new TransactionAction() {
             @Override
-            public RespuestaListArchivos execute() {
+            public RespuestaListArchivos execute() throws Exception {
                 return IconResolver.Resolver(datosOperacion);
             }
         };
@@ -262,7 +262,7 @@ public class Transacciones   {
     private TransactionAction iconosUpdate (final DatosOperacion datosOperacion){
         return new TransactionAction() {
             @Override
-            public RespuestaUpdate execute() throws Throwable {
+            public RespuestaUpdate execute() throws Exception {
                 return IconUpdateResolver.Resolver(datosOperacion);
             }
         };
@@ -286,7 +286,7 @@ public class Transacciones   {
     private TransactionAction logosUpdate (final DatosOperacion datosOperacion){
         return new TransactionAction() {
             @Override
-            public RespuestaUpdate execute() {
+            public RespuestaUpdate execute() throws Exception {
                 return ApiFullcargaAndroid.logoUpdate(
                         AppLogger.LOGGER,
                         datosOperacion.getIdPeticion(),
@@ -302,7 +302,7 @@ public class Transacciones   {
     private TransactionAction saldo (final DatosOperacion datosOperacion){
         return new TransactionAction() {
             @Override
-            public RespuestaSaldo execute() {
+            public RespuestaSaldo execute() throws Exception {
                 return ApiFullcargaAndroid.saldo(
                         AppLogger.LOGGER,
                         datosOperacion.getIdPeticion(),
@@ -314,12 +314,12 @@ public class Transacciones   {
     }
 
 
-    public AbstractRespuesta callOperation() throws Throwable{
+    public AbstractRespuesta callOperation() throws Exception{
       return    ejecutarOperacion().execute();
     }
 
 
     public interface TransactionAction<T extends AbstractRespuesta> {
-        T execute() throws Throwable;
+        T execute() throws Exception;
     }
 }
