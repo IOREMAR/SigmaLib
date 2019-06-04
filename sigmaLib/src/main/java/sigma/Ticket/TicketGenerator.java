@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -38,10 +39,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import sigma.general.interfaces.OnFailureListener;
+import sigma.manager.AppLogger;
 import sigma.manager.SigmaBdManager;
 import sigma.utils.Constantes;
 import sigma.utils.CustomTypefaceSpan;
 import sigma.utils.DateUtils;
+import sigma.utils.UtilitiesSigma;
 
 import static sigma.manager.AppLogger.LOGGER;
 
@@ -665,14 +668,82 @@ public final class TicketGenerator {
         }
 
         if (bitmapBarcode != null) {
-            final Drawable drawable = new BitmapDrawable(bitmapBarcode);
-            drawable.setBounds(0, 10, (int) (drawable.getIntrinsicWidth() / 1.75), drawable.getIntrinsicHeight());
+            final Drawable drawable = getDrawable();
             final ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM);
             final int start = spannableBuffer.toString().indexOf(Constantes.BCODE_FIELD);
             spannableBuffer.setSpan(imageSpan, start, start + Constantes.BCODE_FIELD.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         }
 
         return spannableBuffer;
+    }
+
+    private static void applyBarcodeBoleta(final SpannableStringBuilder buffer) {
+        final Pattern mPattern = Pattern.compile(Constantes.BCODE_FIELD);
+        final Matcher matcher = mPattern.matcher(buffer);
+
+        if(matcher.find()){
+            if (bitmapBarcode != null) {
+                final Drawable drawable = getDrawable();
+                final ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM);
+                final int start = buffer.toString().indexOf(Constantes.BCODE_FIELD);
+                buffer.setSpan(imageSpan, start, start + Constantes.BCODE_FIELD.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            }else {
+                buffer.replace(buffer.toString().indexOf(Constantes.BCODE_FIELD),buffer.toString().indexOf(Constantes.BCODE_FIELD)+Constantes.BCODE_FIELD.length(),"");
+            }
+        }
+    }
+
+    @NonNull
+    private static Drawable getDrawable() {
+        final Drawable drawable = new BitmapDrawable(bitmapBarcode);
+        boolean isTablet = UtilitiesSigma.isTablet();
+        int intrinsicWidth = drawable.getIntrinsicWidth();
+        int intrinsicHeight = drawable.getIntrinsicHeight();
+        drawable.setBounds(0, 10,
+                (int) (isTablet ? (intrinsicWidth / 4) : (intrinsicWidth / 1.75)),
+                (int) (isTablet ? (intrinsicHeight / 2) : intrinsicHeight));
+        return drawable;
+    }
+
+    private static List<SpannableStringBuilder> setStyleToTicket(final SpannableStringBuilder spannableBuffer) {
+        final List<SpannableStringBuilder> builders = new ArrayList<>();
+        final String[] strings = spannableBuffer.toString().split("\n");
+        for (final String s : strings) {
+            if (strings.length > 1) {
+                final SpannableStringBuilder builder = new SpannableStringBuilder(s);
+
+                try {
+                    applyFonts(builder);
+                } catch (final Exception e) {
+                    AppLogger.LOGGER.throwing(TAG, 1, e, e.getMessage());
+                }
+
+                try {
+                    alignText(builder);
+                } catch (final Exception e) {
+                    AppLogger.LOGGER.throwing(TAG, 1, e, e.getMessage());
+                }
+
+                try {
+                    applyStyleBold(builder);
+                } catch (final Exception e) {
+                    AppLogger.LOGGER.throwing(TAG, 1, e, e.getMessage());
+                }
+                try {
+                    applyReverse(builder);
+                } catch (final Exception e) {
+                    AppLogger.LOGGER.throwing(TAG, 1, e, e.getMessage());
+                }
+                try {
+                    applyBarcodeBoleta(builder);
+                } catch (final Exception e) {
+                    AppLogger.LOGGER.throwing(TAG, 1, e, e.getMessage());
+                }
+                builders.add(builder);
+                builders.add(SpannableStringBuilder.valueOf("\n"));
+            }
+        }
+        return builders;
     }
 
     /**
