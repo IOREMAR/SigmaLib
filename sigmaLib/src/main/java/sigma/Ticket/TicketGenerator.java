@@ -10,6 +10,7 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.AlignmentSpan;
 import android.text.style.BackgroundColorSpan;
@@ -124,30 +125,8 @@ public final class TicketGenerator {
 
         final SpannableStringBuilder buf = new SpannableStringBuilder(ticketTemplate);
 
-        try {
-            applyFonts(buf);
-        } catch (final Exception e) {
-            LOGGER.throwing(TAG, 1, e, e.getMessage());
-        }
+        return TextUtils.concat(setLineFeedToWholeTicket(buf));
 
-        try {
-            alignText(buf);
-        } catch (final Exception e) {
-            LOGGER.throwing(TAG, 1, e, e.getMessage());
-        }
-
-        try {
-            applyStyleBold(buf);
-        } catch (final Exception e) {
-            LOGGER.throwing(TAG, 1, e, e.getMessage());
-        }
-        try {
-            applyReverse(buf);
-        } catch (final Exception e) {
-            LOGGER.throwing(TAG, 1, e, e.getMessage());
-        }
-
-        return setLineFeedToWholeTicket(buf);
     }
 
     /***
@@ -391,18 +370,18 @@ public final class TicketGenerator {
         return stringAscii.toString();
     }
 
-    private static Bitmap getFormatValueC(final char[] array, final CamposTicket camposTicket) {
+    private static Bitmap getFormatValueC(final char[] array,  final CamposTicket camposTicket) {
         final StringBuilder stringHex = new StringBuilder();
         final StringBuilder stringAscii = new StringBuilder();
-        int type = -1;
+        int type = - 1;
         int field = -1;
         int subFlied = -1;
         for (final char character : array) {
             stringHex.append(character);
             if (stringHex.length() == 2) {
-                type = Integer.parseInt(stringHex.toString().substring(0, 2), 16);
+                type = Integer.parseInt(stringHex.toString().substring(0,2), 16);
             }
-            if (stringHex.length() == 4) {
+            if (stringHex.length() == 4){
                 field = Integer.parseInt(stringHex.toString().substring(2, 4), 16);
             }
             if (stringHex.length() == 6) {
@@ -636,7 +615,25 @@ public final class TicketGenerator {
         }
     }
 
-    public static String fromHexString(final String hex) {
+    private static void applyBarcodeBoleta(final SpannableStringBuilder buffer) {
+        final Pattern mPattern = Pattern.compile(Constantes.BCODE_FIELD);
+        final Matcher matcher = mPattern.matcher(buffer);
+
+        if(matcher.find()){
+            if (bitmapBarcode != null) {
+                final Drawable drawable = getDrawable();
+                final ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM);
+                final int start = buffer.toString().indexOf(Constantes.BCODE_FIELD);
+                buffer.setSpan(imageSpan, start, start + Constantes.BCODE_FIELD.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            }else {
+                buffer.replace(buffer.toString().indexOf(Constantes.BCODE_FIELD),buffer.toString().indexOf(Constantes.BCODE_FIELD)+Constantes.BCODE_FIELD.length(),"");
+            }
+        }
+
+    }
+
+
+        public static String fromHexString(final String hex) {
         final StringBuilder str = new StringBuilder();
         for (int i = 0; i < hex.length(); i += 2) {
             str.append((char) Integer.parseInt(hex.substring(i, i + 2), 16));
@@ -653,7 +650,9 @@ public final class TicketGenerator {
         bitmapBarcode = null;
     }
 
-    private static SpannableStringBuilder setLineFeedToWholeTicket(final SpannableStringBuilder spannableBuffer) {
+    private static SpannableStringBuilder[] setLineFeedToWholeTicket(final SpannableStringBuilder spannableBuffer) {
+
+        final List<SpannableStringBuilder> stringBuilders = setStyleToTicket(spannableBuffer);
 
         final String[] lines = spannableBuffer.toString().trim().split("\n");
 
@@ -667,42 +666,7 @@ public final class TicketGenerator {
             }
         }
 
-        if (bitmapBarcode != null) {
-            final Drawable drawable = getDrawable();
-            final ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM);
-            final int start = spannableBuffer.toString().indexOf(Constantes.BCODE_FIELD);
-            spannableBuffer.setSpan(imageSpan, start, start + Constantes.BCODE_FIELD.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        }
-
-        return spannableBuffer;
-    }
-
-    private static void applyBarcodeBoleta(final SpannableStringBuilder buffer) {
-        final Pattern mPattern = Pattern.compile(Constantes.BCODE_FIELD);
-        final Matcher matcher = mPattern.matcher(buffer);
-
-        if(matcher.find()){
-            if (bitmapBarcode != null) {
-                final Drawable drawable = getDrawable();
-                final ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM);
-                final int start = buffer.toString().indexOf(Constantes.BCODE_FIELD);
-                buffer.setSpan(imageSpan, start, start + Constantes.BCODE_FIELD.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            }else {
-                buffer.replace(buffer.toString().indexOf(Constantes.BCODE_FIELD),buffer.toString().indexOf(Constantes.BCODE_FIELD)+Constantes.BCODE_FIELD.length(),"");
-            }
-        }
-    }
-
-    @NonNull
-    private static Drawable getDrawable() {
-        final Drawable drawable = new BitmapDrawable(bitmapBarcode);
-        boolean isTablet = UtilitiesSigma.isTablet();
-        int intrinsicWidth = drawable.getIntrinsicWidth();
-        int intrinsicHeight = drawable.getIntrinsicHeight();
-        drawable.setBounds(0, 10,
-                (int) (isTablet ? (intrinsicWidth / 4) : (intrinsicWidth / 1.75)),
-                (int) (isTablet ? (intrinsicHeight / 2) : intrinsicHeight));
-        return drawable;
+        return stringBuilders.toArray(new SpannableStringBuilder[stringBuilders.size()]);
     }
 
     private static List<SpannableStringBuilder> setStyleToTicket(final SpannableStringBuilder spannableBuffer) {
@@ -744,6 +708,19 @@ public final class TicketGenerator {
             }
         }
         return builders;
+    }  
+    
+
+    @NonNull
+    private static Drawable getDrawable() {
+        final Drawable drawable = new BitmapDrawable(bitmapBarcode);
+        boolean isTablet = UtilitiesSigma.isTablet();
+        int intrinsicWidth = drawable.getIntrinsicWidth();
+        int intrinsicHeight = drawable.getIntrinsicHeight();
+        drawable.setBounds(0, 10,
+                (int) (isTablet ? (intrinsicWidth / 4) : (intrinsicWidth / 1.75)),
+                (int) (isTablet ? (intrinsicHeight / 2) : intrinsicHeight));
+        return drawable;
     }
 
     /**
