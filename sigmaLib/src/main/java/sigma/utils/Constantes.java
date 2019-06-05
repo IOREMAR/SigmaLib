@@ -63,7 +63,7 @@ public final class Constantes {
     public static final String NOMBRE_APK = "apk_update.apk";
     public static final String ACTION_UPDATE_END = "com.pagatodoholdings.posandroid.UPDATE_END";
 
-    public static final String BCODE_FIELD = "bcode_field";
+    public static final String BCODE_FIELD = "C<";
 
 
     public enum Preferencia {
