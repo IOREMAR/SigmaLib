@@ -91,7 +91,8 @@ public final class Constantes {
         CAPK_UPDATED,
         NOTIFICACIONES_ARRAY,
         NOTIFICACIONES_LEIDAS,
-        LISTA_NOTIFICACIONE_LEIDAS
+        LISTA_NOTIFICACIONE_LEIDAS,
+        COLOR_TEMA
     }
 
     public enum EstadosRegistro {
