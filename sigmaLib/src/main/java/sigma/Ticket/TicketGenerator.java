@@ -126,7 +126,6 @@ public final class TicketGenerator {
         final SpannableStringBuilder buf = new SpannableStringBuilder(ticketTemplate);
 
         return TextUtils.concat(setLineFeedToWholeTicket(buf));
-
     }
 
     /***
@@ -370,18 +369,18 @@ public final class TicketGenerator {
         return stringAscii.toString();
     }
 
-    private static Bitmap getFormatValueC(final char[] array,  final CamposTicket camposTicket) {
+    private static Bitmap getFormatValueC(final char[] array, final CamposTicket camposTicket) {
         final StringBuilder stringHex = new StringBuilder();
         final StringBuilder stringAscii = new StringBuilder();
-        int type = - 1;
+        int type = -1;
         int field = -1;
         int subFlied = -1;
         for (final char character : array) {
             stringHex.append(character);
             if (stringHex.length() == 2) {
-                type = Integer.parseInt(stringHex.toString().substring(0,2), 16);
+                type = Integer.parseInt(stringHex.toString().substring(0, 2), 16);
             }
-            if (stringHex.length() == 4){
+            if (stringHex.length() == 4) {
                 field = Integer.parseInt(stringHex.toString().substring(2, 4), 16);
             }
             if (stringHex.length() == 6) {
@@ -619,21 +618,19 @@ public final class TicketGenerator {
         final Pattern mPattern = Pattern.compile(Constantes.BCODE_FIELD);
         final Matcher matcher = mPattern.matcher(buffer);
 
-        if(matcher.find()){
+        if (matcher.find()) {
             if (bitmapBarcode != null) {
                 final Drawable drawable = getDrawable();
                 final ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM);
                 final int start = buffer.toString().indexOf(Constantes.BCODE_FIELD);
                 buffer.setSpan(imageSpan, start, start + Constantes.BCODE_FIELD.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            }else {
-                buffer.replace(buffer.toString().indexOf(Constantes.BCODE_FIELD),buffer.toString().indexOf(Constantes.BCODE_FIELD)+Constantes.BCODE_FIELD.length(),"");
+            } else {
+                buffer.replace(buffer.toString().indexOf(Constantes.BCODE_FIELD), buffer.toString().indexOf(Constantes.BCODE_FIELD) + Constantes.BCODE_FIELD.length(), "");
             }
         }
-
     }
 
-
-        public static String fromHexString(final String hex) {
+    public static String fromHexString(final String hex) {
         final StringBuilder str = new StringBuilder();
         for (int i = 0; i < hex.length(); i += 2) {
             str.append((char) Integer.parseInt(hex.substring(i, i + 2), 16));
@@ -650,9 +647,7 @@ public final class TicketGenerator {
         bitmapBarcode = null;
     }
 
-    private static SpannableStringBuilder[] setLineFeedToWholeTicket(final SpannableStringBuilder spannableBuffer) {
-
-        final List<SpannableStringBuilder> stringBuilders = setStyleToTicket(spannableBuffer);
+    private static SpannableStringBuilder[] setLineFeedToWholeTicket(SpannableStringBuilder spannableBuffer) {
 
         final String[] lines = spannableBuffer.toString().trim().split("\n");
 
@@ -665,6 +660,8 @@ public final class TicketGenerator {
                 spannableBuffer.replace(start, end, lineByTextSize(line, spannableBuffer.getSpans(start, end, AbsoluteSizeSpan.class)));
             }
         }
+
+        final List<SpannableStringBuilder> stringBuilders = setStyleToTicket(spannableBuffer);
 
         return stringBuilders.toArray(new SpannableStringBuilder[stringBuilders.size()]);
     }
@@ -708,8 +705,7 @@ public final class TicketGenerator {
             }
         }
         return builders;
-    }  
-    
+    }
 
     @NonNull
     private static Drawable getDrawable() {
