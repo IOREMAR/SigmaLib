@@ -652,20 +652,15 @@ public final class TicketGenerator {
     }
 
     private static SpannableStringBuilder[] setLineFeedToWholeTicket(SpannableStringBuilder spannableBuffer) {
-
-        final String[] lines = spannableBuffer.toString().trim().split("\n");
-
-        for (final String line : lines) {
-
-            if (line.length() > 1) {
-
-                final int start = spannableBuffer.toString().indexOf(line);
-                final int end = spannableBuffer.toString().indexOf(line) + line.length();
-                spannableBuffer.replace(start, end, lineByTextSize(line, spannableBuffer.getSpans(start, end, AbsoluteSizeSpan.class)));
-            }
-        }
-
         final List<SpannableStringBuilder> stringBuilders = setStyleToTicket(spannableBuffer);
+
+        for (int i = 0; i < stringBuilders.size(); i++){
+            final String text = stringBuilders.get(i).toString();
+            final int start = 0;
+            final int end = stringBuilders.get(i).toString().length();
+
+            stringBuilders.get(i).replace(start, end, lineByTextSize(text, stringBuilders.get(i).getSpans(start, end, AbsoluteSizeSpan.class)));
+        }
 
         return stringBuilders.toArray(new SpannableStringBuilder[stringBuilders.size()]);
     }
