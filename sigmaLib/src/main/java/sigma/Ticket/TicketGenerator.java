@@ -642,6 +642,10 @@ public final class TicketGenerator {
         return boleta;
     }
 
+    public static Bitmap getBoletaPrint() {
+        return bitmapBarcode;
+    }
+
     public static void clearBoleta() {
         boleta = null;
         bitmapBarcode = null;
