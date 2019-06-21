@@ -516,61 +516,41 @@ public final class TicketGenerator {
         final Pattern mPattern = Pattern.compile(regexScript);
         final Matcher matcher = mPattern.matcher(buffer);
         final List<Integer> indexes = new ArrayList<>();
-        final List<Integer> sizes = new ArrayList<>();
         int index = 0;
         while (matcher.find()) {
             final String pivot = matcher.group();
             final String fontFormatAuxiliar = pivot.substring(0, 3); //traemos el formato de posicion ESC F Var
             indexes.add(buffer.toString().indexOf(pivot));
-            sizes.add((int) fontFormatAuxiliar.charAt(fontFormatAuxiliar.length() - 1));
 
             buffer.replace(indexes.get(index), (indexes.get(index) + pivot.length()), pivot.replace(fontFormatAuxiliar, ""));
             index++;
         }
 
-        if (!indexes.isEmpty()) {
-            index = 0;
-            if (indexes.get(index) != 0) {
-                setFontSize(buffer, 1, 0, indexes.get(index));
-            }
-            for (index = 0; index < indexes.size(); index++) {
-                if (index == indexes.size() - 1) {
-                    setFontSize(buffer, sizes.get(index), indexes.get(index), buffer.length());
-                } else {
-                    setFontSize(buffer, sizes.get(index), indexes.get(index), indexes.get(index + 1));
-                }
-            }
-        } else {
-            setFontSize(buffer, 1, 0, buffer.length());
-        }
+        setFontSize(buffer, buffer.length(), 0, buffer.length());
+
         //Below code was asked as a way for avoiding irregular spacing chars.
         final Typeface monoSpaceFont = Typeface.createFromAsset(ApiInstance.getInstance().getAppcontext().getAssets(), "lucida.otf"); //
         buffer.setSpan(new CustomTypefaceSpan("", monoSpaceFont), 0, buffer.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
     }
 
-    private static void setFontSize(final SpannableStringBuilder buffer, final int fontKind, final int start, final int end) {
-        switch (fontKind) {
-            case 0:
-
+    private static void setFontSize(final SpannableStringBuilder buffer, final int lenght, final int start, final int end) {
+        if (lenght > 0) {
+            if (lenght <= CHARS_PER_LINE_NORMAL_SIZE) {
+                buffer.setSpan(new AbsoluteSizeSpan(TEXT_NORMAL_SIZE, true), start, end,
+                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            } else if (lenght <= CHARS_PER_LINE_SMALL_SIZE) {
                 buffer.setSpan(new AbsoluteSizeSpan(TEXT_SMALL_SIZE, true), start, end,
                         Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                break;
-            case 1:
-                buffer.setSpan(new AbsoluteSizeSpan(TEXT_NORMAL_SIZE, true), start, end,
-                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                break;
-            case 2:
+            } else if (lenght <= CHARS_PER_LINE_MEDIUM_SIZE) {
                 buffer.setSpan(new AbsoluteSizeSpan(TEXT_MEDIUM_SIZE, true), start, end,
                         Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                break;
-            case 3:
+            } else if (lenght <= CHARS_PER_LINE_BIG_SIZE) {
                 buffer.setSpan(new AbsoluteSizeSpan(TEXT_LARGE_SIZE, true), start, end,
                         Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                break;
-            default:
+            } else {
                 buffer.setSpan(new AbsoluteSizeSpan(TEXT_NORMAL_SIZE, true), start, end,
                         Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                break;
+            }
         }
     }
 
@@ -620,7 +600,10 @@ public final class TicketGenerator {
 
         if (matcher.find()) {
             if (bitmapBarcode != null) {
-                final Drawable drawable = getDrawable();
+                final Drawable drawable = new BitmapDrawable(bitmapBarcode);
+                drawable.setBounds(0, 10,
+                        (int) (UtilitiesSigma.isTablet() ? (drawable.getIntrinsicWidth() / 4) : (drawable.getIntrinsicWidth() / 1.75)),
+                        (int) (UtilitiesSigma.isTablet() ? (drawable.getIntrinsicHeight() / 2) : drawable.getIntrinsicHeight()));
                 final ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM);
                 final int start = buffer.toString().indexOf(Constantes.BCODE_FIELD);
                 buffer.setSpan(imageSpan, start, start + Constantes.BCODE_FIELD.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -651,7 +634,8 @@ public final class TicketGenerator {
         bitmapBarcode = null;
     }
 
-    private static SpannableStringBuilder[] setLineFeedToWholeTicket(SpannableStringBuilder spannableBuffer) {
+    private static SpannableStringBuilder[] setLineFeedToWholeTicket(final SpannableStringBuilder spannableBuffer) {
+
         final List<SpannableStringBuilder> stringBuilders = setStyleToTicket(spannableBuffer);
 
         for (int i = 0; i < stringBuilders.size(); i++){
@@ -665,6 +649,18 @@ public final class TicketGenerator {
         return stringBuilders.toArray(new SpannableStringBuilder[stringBuilders.size()]);
     }
 
+    @NonNull
+    private static Drawable getDrawable() {
+        final Drawable drawable = new BitmapDrawable(bitmapBarcode);
+        boolean isTablet = UtilitiesSigma.isTablet();
+        int intrinsicWidth = drawable.getIntrinsicWidth();
+        int intrinsicHeight = drawable.getIntrinsicHeight();
+        drawable.setBounds(0, 10,
+                (int) (isTablet ? (intrinsicWidth / 4) : (intrinsicWidth / 1.75)),
+                (int) (isTablet ? (intrinsicHeight / 2) : intrinsicHeight));
+        return drawable;
+    }
+
     private static List<SpannableStringBuilder> setStyleToTicket(final SpannableStringBuilder spannableBuffer) {
         final List<SpannableStringBuilder> builders = new ArrayList<>();
         final String[] strings = spannableBuffer.toString().split("\n");
@@ -673,13 +669,13 @@ public final class TicketGenerator {
                 final SpannableStringBuilder builder = new SpannableStringBuilder(s);
 
                 try {
-                    applyFonts(builder);
+                    alignText(builder);
                 } catch (final Exception e) {
                     AppLogger.LOGGER.throwing(TAG, 1, e, e.getMessage());
                 }
 
                 try {
-                    alignText(builder);
+                    applyFonts(builder);
                 } catch (final Exception e) {
                     AppLogger.LOGGER.throwing(TAG, 1, e, e.getMessage());
                 }
@@ -704,18 +700,6 @@ public final class TicketGenerator {
             }
         }
         return builders;
-    }
-
-    @NonNull
-    private static Drawable getDrawable() {
-        final Drawable drawable = new BitmapDrawable(bitmapBarcode);
-        boolean isTablet = UtilitiesSigma.isTablet();
-        int intrinsicWidth = drawable.getIntrinsicWidth();
-        int intrinsicHeight = drawable.getIntrinsicHeight();
-        drawable.setBounds(0, 10,
-                (int) (isTablet ? (intrinsicWidth / 4) : (intrinsicWidth / 1.75)),
-                (int) (isTablet ? (intrinsicHeight / 2) : intrinsicHeight));
-        return drawable;
     }
 
     /**
