@@ -3,6 +3,7 @@ package sigma.secciones.operaciones.datos;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+
 import com.pagatodo.sigmamanager.Instance.ApiInstance;
 
 import net.fullcarga.android.api.ApiFullcargaAndroid;
@@ -20,6 +21,7 @@ import sigma.utils.Constantes;
 import sigma.utils.UnzipUtility;
 
 import static sigma.utils.Constantes.PREFERENCE_SETTINGS;
+import static sigma.utils.Constantes.Preferencia.VERSION_DB_SIGMA;
 
 public class InitUpdateResolver  {
     private static final String TAG = InitUpdateResolver.class.getSimpleName();
@@ -71,6 +73,7 @@ public class InitUpdateResolver  {
                     UnzipUtility.unzipFile(ApiInstance.getInstance().getSigmaPath() + ApiInstance.getInstance().getSigmaDBName() + ".zip", ApiInstance.getInstance().getSigmaPath());
                     SharedPreferences preferencesdbname = ApiInstance.getInstance().getAppcontext().getSharedPreferences(PREFERENCE_SETTINGS, Context.MODE_PRIVATE);
                     preferencesdbname.edit().putString(Constantes.Preferencia.DB_NAME.name(), ApiInstance.getInstance().getSigmaDBName() + ".db").apply();
+                    preferencesdbname.edit().putString(VERSION_DB_SIGMA.name(), ApiInstance.getInstance().getDatosSesion().getDatosTPV().getVersionBd()).apply();
                     return resolver;
                 } catch (  RuntimeException exc ) {
                     AppLogger.LOGGER.throwing(TAG, 1, exc, "Error al Descomprimir");
