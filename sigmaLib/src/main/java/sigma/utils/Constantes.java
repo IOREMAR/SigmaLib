@@ -73,6 +73,7 @@ public final class Constantes {
         DATOS_SESION,
         DATOS_SESION_PCI,
         DB_NAME,
+        VERSION_DB_SIGMA,
         DB_NAME_SCANNER,
         ICONZIP_NAME,
         LOGOZIP_NAME,
