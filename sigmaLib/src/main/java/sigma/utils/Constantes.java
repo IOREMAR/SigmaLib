@@ -93,7 +93,11 @@ public final class Constantes {
         NOTIFICACIONES_ARRAY,
         NOTIFICACIONES_LEIDAS,
         LISTA_NOTIFICACIONE_LEIDAS,
-        COLOR_TEMA
+        COLOR_TEMA,
+        NOMBRE,
+        EMAIL,
+        GENERO,
+        TELEFONO
     }
 
     public enum EstadosRegistro {
