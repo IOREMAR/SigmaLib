@@ -97,7 +97,8 @@ public final class Constantes {
         NOMBRE,
         EMAIL,
         GENERO,
-        TELEFONO
+        TELEFONO,
+        DONGLE_VINCULADO
     }
 
     public enum EstadosRegistro {
