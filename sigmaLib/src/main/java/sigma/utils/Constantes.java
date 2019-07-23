@@ -99,7 +99,8 @@ public final class Constantes {
         GENERO,
         TELEFONO,
         DONGLE_VINCULADO,
-        VISTA_MENU_PRODUCTOS
+        VISTA_MENU_PRODUCTOS,
+        DONGLE_MAC_ADDRESS
     }
 
     public enum EstadosRegistro {
