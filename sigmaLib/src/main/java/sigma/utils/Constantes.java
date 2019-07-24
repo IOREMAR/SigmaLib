@@ -100,7 +100,8 @@ public final class Constantes {
         TELEFONO,
         DONGLE_VINCULADO,
         VISTA_MENU_PRODUCTOS,
-        DONGLE_MAC_ADDRESS
+        DONGLE_MAC_ADDRESS,
+        AUTH_FINGERPRINT
     }
 
     public enum EstadosRegistro {
