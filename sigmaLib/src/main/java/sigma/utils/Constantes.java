@@ -101,7 +101,8 @@ public final class Constantes {
         DONGLE_VINCULADO,
         VISTA_MENU_PRODUCTOS,
         DONGLE_MAC_ADDRESS,
-        AUTH_FINGERPRINT
+        AUTH_FINGERPRINT,
+        PAIS
     }
 
     public enum EstadosRegistro {
