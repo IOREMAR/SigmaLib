@@ -517,40 +517,56 @@ public final class TicketGenerator {
         final Matcher matcher = mPattern.matcher(buffer);
         final List<Integer> indexes = new ArrayList<>();
         int index = 0;
+        int fontSize = -1;
         while (matcher.find()) {
             final String pivot = matcher.group();
             final String fontFormatAuxiliar = pivot.substring(0, 3); //traemos el formato de posicion ESC F Var
             indexes.add(buffer.toString().indexOf(pivot));
+            fontSize = (int) fontFormatAuxiliar.charAt(fontFormatAuxiliar.length() - 1);
 
             buffer.replace(indexes.get(index), (indexes.get(index) + pivot.length()), pivot.replace(fontFormatAuxiliar, ""));
             index++;
         }
 
-        setFontSize(buffer, buffer.length(), 0, buffer.length());
+        if (fontSize != -1) {
+            setFontSize(buffer, fontSize, 0, buffer.length());
+        } else {
+            if (buffer.length() <= CHARS_PER_LINE_NORMAL_SIZE) {
+                setFontSize(buffer, 1, 0, buffer.length());
+            } else if (buffer.length() <= CHARS_PER_LINE_SMALL_SIZE) {
+                setFontSize(buffer, 0, 0, buffer.length());
+            } else {
+                setFontSize(buffer, 1, 0, buffer.length());
+            }
+        }
 
         //Below code was asked as a way for avoiding irregular spacing chars.
         final Typeface monoSpaceFont = Typeface.createFromAsset(ApiInstance.getInstance().getAppcontext().getAssets(), "lucida.otf"); //
         buffer.setSpan(new CustomTypefaceSpan("", monoSpaceFont), 0, buffer.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
     }
 
-    private static void setFontSize(final SpannableStringBuilder buffer, final int lenght, final int start, final int end) {
-        if (lenght > 0) {
-            if (lenght <= CHARS_PER_LINE_NORMAL_SIZE) {
-                buffer.setSpan(new AbsoluteSizeSpan(TEXT_NORMAL_SIZE, true), start, end,
-                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            } else if (lenght <= CHARS_PER_LINE_SMALL_SIZE) {
+    private static void setFontSize(final SpannableStringBuilder buffer, final int fontKind, final int start, final int end) {
+        switch (fontKind) {
+            case 0:
                 buffer.setSpan(new AbsoluteSizeSpan(TEXT_SMALL_SIZE, true), start, end,
                         Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            } else if (lenght <= CHARS_PER_LINE_MEDIUM_SIZE) {
-                buffer.setSpan(new AbsoluteSizeSpan(TEXT_MEDIUM_SIZE, true), start, end,
-                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            } else if (lenght <= CHARS_PER_LINE_BIG_SIZE) {
-                buffer.setSpan(new AbsoluteSizeSpan(TEXT_LARGE_SIZE, true), start, end,
-                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            } else {
+                break;
+            case 1:
                 buffer.setSpan(new AbsoluteSizeSpan(TEXT_NORMAL_SIZE, true), start, end,
                         Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            }
+                break;
+            case 2:
+                buffer.setSpan(new AbsoluteSizeSpan(TEXT_MEDIUM_SIZE, true), start, end,
+                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                break;
+            case 3:
+                buffer.setSpan(new AbsoluteSizeSpan(TEXT_LARGE_SIZE, true), start, end,
+                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                break;
+            default:
+                buffer.setSpan(new AbsoluteSizeSpan(TEXT_NORMAL_SIZE, true), start, end,
+                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                break;
         }
     }
 
