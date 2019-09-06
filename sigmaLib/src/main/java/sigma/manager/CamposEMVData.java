@@ -4,46 +4,87 @@ import com.pagatodo.sigmamanager.Instance.ApiInstance;
 
 import org.apache.commons.codec.binary.Hex;
 
-
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-
-
 
 import static sigma.manager.AppLogger.LOGGER;
 
 @SuppressWarnings("PMD.GodClass")
 public final class CamposEMVData {
 
-
     private static final String TAG = CamposEMVData.class.getSimpleName();
     private static CamposEMVData instance;
     private DecodeData decodeTarjeta;
     private static final String[] TAGSEMV = {"4F", "5F20", "9F12", "5A", "9F27", "9F26", "95", "9B", "5F28", "9F07"};
-    private  int maxCuota;
+    private int minCuotas;
+    private int maxCuotas;
+    private int incrCuotas;
+    private int minCuotasDias;
+    private int maxCuotasDias;
+    private int incrCuotasDias;
     private static Map<String, String> mapTags = new HashMap<>();
 
-    public int getMaxCuota() {
-        return maxCuota;
+    public int getMaxCuotas() {
+        return maxCuotas;
     }
 
-    public void setMaxCuota(final int maxCuota) {
-        this.maxCuota = maxCuota;
+    public void setMaxCuotas(final int maxCuotas) {
+        this.maxCuotas = maxCuotas;
     }
+
+    public int getMinCuotas() {
+        return minCuotas;
+    }
+
+    public void setMinCuotas(int minCuotas) {
+        this.minCuotas = minCuotas;
+    }
+
+    public int getMinCuotasDias() {
+        return minCuotasDias;
+    }
+
+    public void setMinCuotasDias(int minCuotasDias) {
+        this.minCuotasDias = minCuotasDias;
+    }
+
+    public int getMaxCuotasDias() {
+        return maxCuotasDias;
+    }
+
+    public void setMaxCuotasDias(int maxCuotasDias) {
+        this.maxCuotasDias = maxCuotasDias;
+    }
+
+    public int getIncrCuotas() {
+        return incrCuotas;
+    }
+
+    public void setIncrCuotas(int incrCuotas) {
+        this.incrCuotas = incrCuotas;
+    }
+
+    public int getIncrCuotasDias() {
+        return incrCuotasDias;
+    }
+
+    public void setIncrCuotasDias(int incrCuotasDias) {
+        this.incrCuotasDias = incrCuotasDias;
+    }
+
     public static CamposEMVData getInstance() {
-       synchronized (CamposEMVData.class) {
-           if (instance == null) {
-               instance = new CamposEMVData();
-           }
-       }
+        synchronized (CamposEMVData.class) {
+            if (instance == null) {
+                instance = new CamposEMVData();
+            }
+        }
         return instance;
     }
 
     private CamposEMVData() {
     }
-
 
     /**
      * Datos de la tarjeta cuando se hace una operacion.
@@ -52,8 +93,7 @@ public final class CamposEMVData {
         decodeTarjeta = dataOpTarjeta;
     }
 
-
-    public String getMaskPan ( ){
+    public String getMaskPan() {
         return decodeTarjeta.getMaskedPAN();
     }
 
@@ -71,7 +111,7 @@ public final class CamposEMVData {
                 return "";
             }
         } catch (RuntimeException exe) {
-           LOGGER.throwing(TAG, 1, exe, "Error al recibir el nombre de la tarjeta");
+            LOGGER.throwing(TAG, 1, exe, "Error al recibir el nombre de la tarjeta");
         }
 
         if (decodeTarjeta != null) {
@@ -96,7 +136,6 @@ public final class CamposEMVData {
             } else {
                 return "";
             }
-
         } catch (RuntimeException exe) {
             LOGGER.throwing(TAG, 1, exe, exe.getCause().toString());
             if (decodeTarjeta != null) {
@@ -121,7 +160,6 @@ public final class CamposEMVData {
             return "";
         }
     }
-
 
     /**
      * Nos regresa el ARQC de la TRX donde usarlo.
@@ -187,7 +225,6 @@ public final class CamposEMVData {
         }
     }
 
-
     private String getTransactionStatus() {
 
         if (!mapTags.isEmpty()) {
@@ -195,7 +232,6 @@ public final class CamposEMVData {
         } else {
             return "";
         }
-
     }
 
     /**
@@ -212,51 +248,39 @@ public final class CamposEMVData {
                 case APP_IDENTIFIER:
                     return getAID();
 
-
                 case APP_PREFERRED_NAME:
                     return getNombreAplicacion();
-
 
                 case APP_NAME:
                     return getNombreAplicacion();
 
-
                 case CARD_HOLDER_NAME:
                     return getCardHolderName();
-
 
                 case PAN:
                     return getMaskedPan();
 
-
                 case CRYPTO_INFO_DATA:
                     return getCRYInfo();
-
 
                 case APP_CRYPTOGRAM:
                     return getARQC();
 
-
                 case TERMINAL_VERIFICATION_RESULTS:
                     return getTerminalVerification();
-
 
                 case TRANSACCION_STATUS_INFORMATION:
                     return getTransactionStatus();
 
-
                 case EMV_MODULE_VERSION:
                     return getVersionEMV();
 
-
                 default:
                     return "";
-
             }
-
         } catch (Exception exe) {
 
-          LOGGER.throwing(TAG, 1, exe, "Error al Recibir los datos TLV");
+            LOGGER.throwing(TAG, 1, exe, "Error al Recibir los datos TLV");
             return "";
         }
     }
@@ -321,11 +345,10 @@ public final class CamposEMVData {
 
             return new String(bytes, "UTF-8");
         } catch (Exception exe) {//NOSONAR
-          LOGGER.throwing(TAG, 1, exe, exe.getMessage());
+            LOGGER.throwing(TAG, 1, exe, exe.getMessage());
             return "";
         }
     }
-
 
     public void reciverEMVTags() {
 
@@ -341,7 +364,7 @@ public final class CamposEMVData {
 
 //        final Map<String, String> decodeData = MposApplication.getInstance().getPreferedDongle().getQpos(PosInterface.Tipodongle.DSPREAD).getIccTags(emvLength, sBuilder.toString());
 
-        final Map<String, String> decodeData =  Collections.emptyMap();
+        final Map<String, String> decodeData = Collections.emptyMap();
         String tlvresponce;
 
         if (decodeData.get("tlv") != null && !decodeData.get("tlv").equals("")) {
@@ -372,7 +395,6 @@ public final class CamposEMVData {
 
         return new StringBuilder(tlvmaterial.substring(tag.length() + 2 + hexalength * 2));
     }
-
 
     public String getTLVBYTAG(final String tag) {
 
