@@ -31,7 +31,8 @@ public final class ReporteVentasInteractor {
             TransaccionesEntry.COLUMN_REF_LOCAL,
             TransaccionesEntry.COLUMN_REF_CLIENTE,
             TransaccionesEntry.COLUMN_IMPORTE,
-            TransaccionesEntry.COLUMN_DESC_PRODUCTO
+            TransaccionesEntry.COLUMN_DESC_PRODUCTO,
+            TransaccionesEntry.COLUMN_PRO_COD
     };
 
     private ReporteVentasInteractor() {

@@ -10,6 +10,7 @@ public class Model {
     private String refCliente;
     private String importe;
     private String descProducto;
+    private String proCod;
 
     public Model(final Cursor cursor) {
 
@@ -19,6 +20,7 @@ public class Model {
         this.refCliente = cursor.getString(3);
         this.importe = cursor.getString(4);
         this.descProducto = cursor.getString(5);
+        this.proCod = cursor.getString(6);
     }
 
 
@@ -45,4 +47,12 @@ public class Model {
     public  String getDescProducto() {
         return descProducto;
     }
+
+
+    public  String getProCod() {
+        return proCod;
+    }
+
+
+
 }

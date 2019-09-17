@@ -70,7 +70,7 @@ public class EmvManager {
         try ( final BdEmvSigmaManager emvSigmaManager = StorageUtility.crearConexionEMVSigmaManager()){
             return toStringTags(emvSigmaManager.getPerfilEmv(perfil).getTagsEmv());
         }
-        catch (SQLException exe ){
+        catch (Exception exe ){
             AppLogger.LOGGER.throwing(TAG,1,exe ,exe.getMessage());
             return Collections.emptyList();
         }

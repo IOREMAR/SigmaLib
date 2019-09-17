@@ -10,6 +10,7 @@ import net.fullcarga.android.api.bd.sigma.manager.BdSigmaManager;
 import net.fullcarga.android.api.constantes.Constantes;
 import net.fullcarga.android.api.data.DatosConexion;
 import net.fullcarga.android.api.data.DatosTPV;
+import net.fullcarga.android.api.data.VersionProtocolo;
 import net.fullcarga.android.api.sesion.DatosSesion;
 import net.fullcarga.android.api.sesion.SessionFactory;
 import net.fullcarga.android.api.util.HexUtil;
@@ -33,7 +34,7 @@ public final class SesionBuilder {
             return SessionFactory.crearSesionLocal(
                     bdSigmaManager.crearDatosConexionLocalTrx(),
                     bdSigmaManager.crearDatosConexionLocalDonwload(),
-                    bdSigmaManager.crearDatosTPV(ApiInstance.getInstance().getNumSerie(), "1", ApiInstance.getVersionBdApp(), new StanProviderMock()),
+                    bdSigmaManager.crearDatosTPV(ApiInstance.getInstance().getNumSerie(), "1", ApiInstance.getVersionBdApp(), new StanProviderMock(), VersionProtocolo.A02_SUNMI),
                     claveTpv,
                     HexUtil.hex2byte(ApiInstance.getInstance().getGetclaveHexLocal(), Constantes.DEF_CHARSET),
                     ApiInstance.getInstance().getNameRsa());
@@ -41,7 +42,7 @@ public final class SesionBuilder {
             return SessionFactory.crearSesionLocal(
                     new DatosConexion(ApiInstance.getInstance().getIpServer(), ApiInstance.getInstance().getPuerto(), 5000,60000),
                     new DatosConexion(ApiInstance.getInstance().getIpServer(),ApiInstance.getInstance().getPuerto(), 5000, 60000),
-                    new DatosTPV("99999999", ApiInstance.getInstance().getDecimales(), new StanProviderMock(), ApiInstance.getInstance().getNumSerie(), ApiInstance.getInstance().getPaisCode(), "", "", ApiInstance.getVersionBdApp()),
+                    new DatosTPV("99999999", ApiInstance.getInstance().getDecimales(), new StanProviderMock(), ApiInstance.getInstance().getNumSerie(), ApiInstance.getInstance().getPaisCode(), VersionProtocolo.A02_SUNMI ,"", "", ApiInstance.getVersionBdApp()),
                     claveTpv,
                     HexUtil.hex2byte(ApiInstance.getInstance().getGetclaveHexLocal(), Constantes.DEF_CHARSET),
                     ApiInstance.getInstance().getNameRsa()
