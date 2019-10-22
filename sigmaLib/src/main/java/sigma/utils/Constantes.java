@@ -43,7 +43,9 @@ public final class Constantes {
         VISTA_MENU_PRODUCTOS,
         DONGLE_MAC_ADDRESS,
         AUTH_FINGERPRINT,
-        PAIS
+        PAIS,
+        ID_PAGO_PSE,
+        CODIGO_CLIENTE_PSE
     }
 
     public enum EstadosRegistro {
