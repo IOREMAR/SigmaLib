@@ -31,7 +31,7 @@ public final class StorageUtility {
     public static boolean validarArchivo(final String fileName) {
         if (fileName != null && !fileName.isEmpty()) {
             final File futureFile = new File(fileName);
-            if (futureFile.exists() && futureFile.length() > 1024) {
+            if (futureFile.exists() && futureFile.length() > 0) {
                 AppLogger.LOGGER.info(StorageUtility.class.getSimpleName(), "Validando Archivo  " + fileName + " ? " + futureFile.exists() + " contentlenght " + futureFile.length());
                 return futureFile.exists();
             }
