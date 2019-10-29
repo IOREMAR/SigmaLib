@@ -27,7 +27,7 @@ public final class StorageUtility {
 
     private StorageUtility() {
     }
-
+  // No subir a 1024k
     public static boolean validarArchivo(final String fileName) {
         if (fileName != null && !fileName.isEmpty()) {
             final File futureFile = new File(fileName);
