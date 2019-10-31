@@ -45,7 +45,9 @@ public final class Constantes {
         AUTH_FINGERPRINT,
         PAIS,
         ID_PAGO_PSE,
-        CODIGO_CLIENTE_PSE
+        CODIGO_CLIENTE_PSE,
+        TIPO_USUARIO,
+        REGISTRO_CUENTA
     }
 
     public enum EstadosRegistro {
