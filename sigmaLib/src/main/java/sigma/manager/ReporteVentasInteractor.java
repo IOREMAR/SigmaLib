@@ -16,7 +16,7 @@ public final class ReporteVentasInteractor {
 
     static {
         selectionMap = new HashMap<>();
-        selectionMap.put(TipoReporte.REPORTE_VENTAS, null);
+        selectionMap.put(TipoReporte.REPORTE_VENTAS, TransaccionesEntry.COLUMN_MEDIO_PAGO+"==1");
         selectionMap.put(TipoReporte.REPORTE_PCI, TransaccionesEntry.COLUMN_MEDIO_PAGO+"=?");
         selectionMap.put(TipoReporte.REPORTE_PCI_DIA, TransaccionesEntry.COLUMN_MEDIO_PAGO+"=? AND " + TransaccionesEntry.COLUMN_TURNO + "=? AND " + TransaccionesEntry.COLUMN_CODIGO_OPER + "='V'");
     }
@@ -50,7 +50,7 @@ public final class ReporteVentasInteractor {
             }
         }
 
-        final Cursor cursor = contentResolver.query(TransaccionesEntry.CONTENT_URI, PROJECTION, selection, null, TransaccionesEntry.COLUMN_FECHA + " DESC");
+        final Cursor cursor = contentResolver.query(TransaccionesEntry.CONTENT_URI, PROJECTION, null, null, TransaccionesEntry.COLUMN_FECHA + " DESC");
         while (cursor != null && cursor.moveToNext()) {
             models.add(createNewModelGetVentas(
                     cursor
